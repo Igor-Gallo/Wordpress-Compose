@@ -12,6 +12,10 @@ RUN apt-get update && apt-get install -y apache2 mariadb-server php php-mysql li
 # Habilitando o mod_rewrite do Apache
 RUN a2enmod rewrite
 
+# Adicione a diretiva ServerName ao arquivo de configuração do Apache
+RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+
+
 # Baixe e instale o Wordpress
 RUN apt-get install -y wget
 RUN wget https://wordpress.org/latest.tar.gz

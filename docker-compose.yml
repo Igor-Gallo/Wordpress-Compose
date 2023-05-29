@@ -4,7 +4,7 @@ version: '3.3'
 
 services:
   wordpress:
-    image: igorgallo/containers-kubernetes:latest
+    build: igorgallo/containers-kubernetes:latest
     restart: always
     ports:
       - 80:80
