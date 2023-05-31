@@ -2,7 +2,7 @@
 define('DB_NAME', 'wpdb');
 define('DB_USER', 'wpuser');
 define('DB_PASSWORD', 'wppass');
-define('DB_HOST', 'localhost');
+define('DB_HOST', 'db');
 define('DB_CHARSET', 'utf8');
 define('DB_COLLATE', '');
 

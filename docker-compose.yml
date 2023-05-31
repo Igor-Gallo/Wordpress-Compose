@@ -6,6 +6,8 @@ services:
   wordpress:
     image: igorgallo/containers-kubernetes:latest
     restart: always
+    depends_on:
+      - db
     ports:
       - 80:80
     environment:
@@ -34,6 +36,6 @@ services:
     restart: always
     ports:
       - 8888:8080
-      
+
 volumes:
   db:
