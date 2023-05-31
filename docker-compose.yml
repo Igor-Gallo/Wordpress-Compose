@@ -18,7 +18,7 @@ services:
       - db:/var/lib/mysql
     
   wordpress:
-    build: .
+    image: wordpress:latest
     restart: always
     depends_on:
       - db
