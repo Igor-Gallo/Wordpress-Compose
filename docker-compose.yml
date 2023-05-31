@@ -3,20 +3,6 @@ version: '3.3'
 
 
 services:
-  wordpress:
-    build: .
-    restart: always
-    depends_on:
-      - db
-    ports:
-      - 80:80
-    environment:
-        WORDPRESS_DB_HOST: db
-        WORDPRESS_DB_USER: wpuser
-        WORDPRESS_DB_PASSWORD: wppass
-        WORDPRESS_DB_NAME: wpdb
-    volumes:
-      - ./src:/var/www/html/wp-content/plugins/meu-plugin
 
   db:
     image: mysql:5.7
@@ -26,9 +12,26 @@ services:
         MYSQL_USER: wpuser
         MYSQL_PASSWORD: wppass
         MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    ports:
+      - 3306:3306
     volumes:
       - db:/var/lib/mysql
     
+  wordpress:
+    build: .
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - 80:80
+    environment:
+        WORDPRESS_DB_HOST: db:3306
+        WORDPRESS_DB_USER: wpuser
+        WORDPRESS_DB_PASSWORD: wppass
+        WORDPRESS_DB_NAME: wpdb
+    volumes:
+      - ./src:/var/www/html/wp-content/plugins/meu-plugin
+  
   adminer:
     depends_on:
         - db
