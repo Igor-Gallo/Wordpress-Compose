@@ -4,7 +4,7 @@ version: '3.3'
 
 services:
   wordpress:
-    image: igorgallo/containers-kubernetes:latest
+    build: .
     restart: always
     depends_on:
       - db
