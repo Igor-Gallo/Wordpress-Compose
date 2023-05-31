@@ -19,6 +19,9 @@ $table_prefix = 'wp_';
 
 define('WP_DEBUG', false);
 
+define('WP_HOME','http://3.83.105.6');
+define('WP_SITEURL','http://3.83.105.6');
+
 if ( !defined('ABSPATH') )
 	define('ABSPATH', dirname(__FILE__) . '/');
 require_once(ABSPATH . 'wp-settings.php');
