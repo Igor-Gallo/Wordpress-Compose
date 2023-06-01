@@ -1,42 +1,38 @@
-# Use a imagem do Ubuntu como base
+# 1. Use a imagem base do Ubuntu
 FROM ubuntu:latest
 
-# Defina variáveis de ambiente
-ENV DEBIAN_FRONTEND=noninteractive
-ENV TZ=America/Sao_Paulo
+# 2. Atualize e instale as dependências
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y software-properties-common && \
+    add-apt-repository ppa:nginx/stable && \
+    apt-get update && \
+    apt-get install -y nginx vim wget curl php7.4-fpm php7.4-mysql php7.4-gd php7.4-xml php7.4-mbstring sendmail
 
-# Atualize o sistema e instale dependências
-RUN apt-get update && apt-get upgrade -y
-RUN apt-get update && apt-get install -y apache2 php libapache2-mod-php wget
+# 3. Baixe o WordPress
+RUN wget -c http://wordpress.org/latest.tar.gz && \
+    tar -xzvf latest.tar.gz && \
+    rm latest.tar.gz
 
-# Habilitando o mod_rewrite do Apache
-RUN a2enmod rewrite
+# 4. Configure o PHP
+RUN sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/' /etc/php/7.4/fpm/php.ini && \
+    sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 127.0.0.1:9000/' /etc/php/7.4/fpm/pool.d/www.conf && \
+    sed -i 's/;sendmail_path =/sendmail_path = \/usr\/sbin\/sendmail -t -i/' /etc/php/7.4/fpm/php.ini
 
-# Adicione a diretiva ServerName ao arquivo de configuração do Apache
-RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
+# 5. Configure o NGINX
+COPY my-site.conf /etc/nginx/conf.d/default.conf
+RUN unlink /etc/nginx/sites-enabled/default
 
-# Instale o MySQL Client
-RUN apt-get install -y mysql-client
+# 6. Copie o WordPress para o diretório correto
+RUN cp -R /wordpress/* /var/www/html/
 
-# Baixe e instale o Wordpress
-RUN apt-get install -y wget
-RUN wget https://wordpress.org/latest.tar.gz
+# 7. Corrija as permissões
+RUN chown -R www-data:www-data /var/www/html/
 
-# Descompactar o Wordpress 
-RUN tar -xvzf latest.tar.gz
-RUN rm latest.tar.gz
+# 8. Configure o volume para persistência
+VOLUME /var/www/html
 
-# Mover Wordpress para o diretório de conteúdo da web
-RUN mv wordpress/* /var/www/html/
-
-# Remover o arquivo de configuração padrão do Wordpress
-RUN rm /var/www/html/wp-config-sample.php
-
-# Copie o arquivo de configuração personalizado do Wordpress
-COPY wp-config.php /var/www/html/wp-config.php
-
-# Exponha a porta 80 para o acesso ao Apache
+# 9. Expose ports
 EXPOSE 80
 
-# Defina o comando de inicialização
-CMD ["apache2ctl", "-D", "FOREGROUND"]
+# 10. Inicie os serviços
+CMD service nginx start && service php7.4-fpm start
